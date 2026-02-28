@@ -93,7 +93,7 @@ class _ServerHomePageState extends State<ServerHomePage> {
 
     try {
       await _camera.initialize();
-      await _camera.lockCaptureOrientation(DeviceOrientation.portraitUp);
+      await _camera.lockCaptureOrientation(DeviceOrientation.landscapeRight);
       await _camera.setFocusMode(FocusMode.auto);
       await _camera.setExposureMode(ExposureMode.auto);
     } catch (e) {

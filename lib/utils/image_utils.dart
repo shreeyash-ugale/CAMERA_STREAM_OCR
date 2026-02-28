@@ -309,28 +309,31 @@ img.Image _yuvPlanesToImage(CameraImage image) {
   return out;
 }
 
-/// Rotates [frame] so the image is portrait-upright, matching what the user
-/// sees through the viewfinder.
+/// Rotates [frame] so the image is landscape-oriented for streaming.
 ///
 /// Android back cameras have [sensorOrientation] = 90, meaning the sensor data
-/// is in landscape; rotating +90° makes it portrait.
+/// is already in landscape — no rotation needed for landscape output.
+/// For sensorOrientation = 270, a 180° rotation is applied to flip it upright
+/// in landscape. For sensorOrientation = 180, a 90° CCW rotation is applied.
 img.Image _applyRotation(
   img.Image frame,
   int sensorOrientation,
   bool isFrontCamera,
 ) {
-  if (sensorOrientation == 0) return frame;
-
   img.Image rotated;
   switch (sensorOrientation) {
     case 90:
-      rotated = img.copyRotate(frame, angle: 90);
-    case 180:
-      rotated = img.copyRotate(frame, angle: 180);
-    case 270:
-      rotated = img.copyRotate(frame, angle: 270);
-    default:
+      // Sensor data is already landscape-oriented; no rotation needed.
       rotated = frame;
+    case 180:
+      // 90° CCW brings the image to landscape.
+      rotated = img.copyRotate(frame, angle: 270);
+    case 270:
+      // 180° flip to correct upside-down landscape.
+      rotated = img.copyRotate(frame, angle: 180);
+    default:
+      // sensorOrientation == 0: rotate 90° CW to get landscape.
+      rotated = img.copyRotate(frame, angle: 90);
   }
 
   // Front cameras are mirrored; flip horizontally to un-mirror.
