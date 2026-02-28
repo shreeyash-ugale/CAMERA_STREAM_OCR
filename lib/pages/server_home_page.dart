@@ -188,7 +188,8 @@ class _ServerHomePageState extends State<ServerHomePage> {
       }
 
       final xFile = await _camera.takePicture();
-      final bytes = await xFile.readAsBytes();
+      final raw = await xFile.readAsBytes();
+      final bytes = await compute(rotateJpeg180, raw);
 
       if (mounted) setState(() => _capturedPhoto = bytes);
       _server?.broadcastPhoto(bytes);

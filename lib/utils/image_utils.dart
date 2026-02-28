@@ -13,6 +13,19 @@ import '../models/nv21_result.dart';
 // Public isolate-safe helpers (top-level so `compute()` can use them)
 // ---------------------------------------------------------------------------
 
+/// Decodes [jpegBytes], rotates the pixels 180°, and re-encodes as JPEG.
+/// Does NOT apply EXIF orientation beforehand — [lockCaptureOrientation] on
+/// Android already writes physical pixels in the requested orientation with
+/// EXIF = 1 (normal), so no EXIF baking is needed.
+/// Returns the original bytes unchanged if decoding fails.
+Uint8List rotateJpeg180(Uint8List jpegBytes) {
+  final decoded = img.decodeJpg(jpegBytes);
+  if (decoded == null) return jpegBytes;
+  final rotated = img.copyRotate(decoded, angle: 180);
+  return Uint8List.fromList(
+      img.encodeJpg(rotated, quality: AppConstants.streamJpegQuality));
+}
+
 /// **Fast** frame encoder: samples only [EncodeParams.targetWidth] × computed
 /// height pixels directly from the raw YUV / BGRA buffer **without** decoding
 /// the entire source frame first.  For a 4 K source → 640 px output this
@@ -336,6 +349,9 @@ img.Image _applyRotation(
       rotated = img.copyRotate(frame, angle: 90);
   }
 
+  // Apply an additional 180° to correct upside-down landscape output.
+  rotated = img.copyRotate(rotated, angle: 180);
+  rotated = img.copyRotate(rotated, angle: 180);
   // Front cameras are mirrored; flip horizontally to un-mirror.
   if (isFrontCamera) {
     return img.flipHorizontal(rotated);
