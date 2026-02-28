@@ -165,7 +165,7 @@ class _ServerHomePageState extends State<ServerHomePage> {
         isFrontCamera: _isFrontCamera,
         targetWidth: AppConstants.streamTargetWidth, // downscale for stream
       );
-      final jpeg = await compute(encodeRawToJpeg, params);
+      final jpeg = await compute(encodeRawToJpegFast, params);
       if (jpeg != null) _server?.broadcastVideoFrame(jpeg);
     } catch (e) {
       debugPrint('Frame encode error: $e');

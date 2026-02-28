@@ -12,8 +12,8 @@ class AppConstants {
   /// The aspect ratio is preserved.  Full-res photos are unaffected.
   static const int streamTargetWidth = 640;
 
-  /// Minimum milliseconds between two encoded stream frames (~10 fps cap).
-  static const int streamFrameIntervalMs = 100;
+  /// Minimum milliseconds between two encoded stream frames (~30 fps cap).
+  static const int streamFrameIntervalMs = 33;
 
   static const String mjpegBoundary = 'mjpegframe';
 }
